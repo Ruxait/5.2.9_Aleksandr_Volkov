@@ -1,9 +1,14 @@
-import './App.css'
+import { Header } from './modules/Header'
+import { CartProvider } from './hooks/useCart'
+import { Catalog } from './modules/Catalog'
 
 function App() {
   return (
     <>
-      <h1>Hello World</h1>
+      <CartProvider>
+        <Header />
+        <Catalog />
+      </CartProvider>
     </>
   )
 }
