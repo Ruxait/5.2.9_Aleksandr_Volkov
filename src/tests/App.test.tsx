@@ -1,18 +1,34 @@
-// tests/App.test.tsx
-import App from '../App'
+import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react'
 import '../setupTests'
-import { render as rtlRender, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { vi } from 'vitest'
+import { LaunchCard } from '../components/LaunchCard'
+import { Modal } from '../components/Modal'
+import { LaunchesGrid } from '../modules/LaunchesGrid'
+import * as api from '../api/launches'
+import type { Launch } from '../types/launch'
 import { MantineProvider } from '@mantine/core'
-import { CartProvider } from '../hooks/useCart'
-import { ProductCard } from '../components/ProductCard'
-import { ProductCardSkeleton } from '../components/ProductCardSkeleton'
-import { ProductGrid } from '../components/ProductGrid'
-import { Catalog } from '../modules/Catalog'
-import { Header } from '../modules/Header'
-import { CartDropdown } from '../components/CartDropDawn'
+
+const render = (ui: React.ReactElement) => rtlRender(<MantineProvider>{ui}</MantineProvider>)
+
+const launches: Launch[] = [
+  {
+    mission_name: 'Demo Mission',
+    rocket: { rocket_name: 'Falcon 9' },
+    links: {
+      mission_patch_small: 'patch-small.png',
+      mission_patch: 'patch.png',
+    },
+    details: 'Some mission details',
+  },
+]
+
+vi.spyOn(api, 'getLaunches').mockResolvedValue(launches)
 
 beforeAll(() => {
+  const modalRoot = document.createElement('div')
+  modalRoot.setAttribute('id', 'modal-root')
+  document.body.appendChild(modalRoot)
+
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: (query: string) => ({
@@ -26,122 +42,67 @@ beforeAll(() => {
       dispatchEvent: () => false,
     }),
   })
-})
-
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <MantineProvider>
-      <CartProvider>{ui}</CartProvider>
-    </MantineProvider>,
-  )
-
-const mockProduct = {
-  id: 1,
-  name: 'Tomato',
-  price: 5,
-  image: 'tomato.jpg',
-  category: 'vegetables',
-}
-
-// ProductCard
-describe('ProductCard', () => {
-  it('рендерит информацию о продукте', () => {
-    render(<ProductCard product={mockProduct} />)
-    expect(screen.getByText(/Tomato/i)).toBeInTheDocument()
-    expect(screen.getByText('$5')).toBeInTheDocument()
-  })
-
-  it('увеличивает и уменьшает количество', () => {
-    render(<ProductCard product={mockProduct} />)
-    const increaseBtn = screen.getByLabelText('increase quantity')
-    const decreaseBtn = screen.getByLabelText('decrease quantity')
-    const quantity = screen.getByText('1')
-
-    fireEvent.click(increaseBtn)
-    expect(quantity.textContent).toBe('2')
-    fireEvent.click(decreaseBtn)
-    expect(quantity.textContent).toBe('1')
-  })
-
-  it('добавляет товар в корзину при нажатии Add to cart', () => {
-    render(<ProductCard product={mockProduct} />)
-    const addBtn = screen.getByText(/Add to cart/i)
-    fireEvent.click(addBtn)
-    expect(screen.getByText('1')).toBeInTheDocument() // бейдж с количеством
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(window, 'ResizeObserver', {
+    writable: true,
+    configurable: true,
+    value: ResizeObserver,
   })
 })
 
-// ProductCardSkeleton
-describe('ProductCardSkeleton', () => {
-  it('рендерится корректно', () => {
-    render(<ProductCardSkeleton />)
-    expect(screen.getByTestId('product-skeleton')).toBeInTheDocument()
+// ---------- LaunchCard ----------
+describe('LaunchCard', () => {
+  test('рендерит название миссии и ракеты', () => {
+    render(<LaunchCard launch={launches[0]} onOpen={() => {}} />)
+    expect(screen.getByText('Demo Mission')).toBeInTheDocument()
+    expect(screen.getByText('Falcon 9')).toBeInTheDocument()
+  })
+
+  test('вызывает onOpen при клике на кнопку', () => {
+    const onOpen = vi.fn()
+    render(<LaunchCard launch={launches[0]} onOpen={onOpen} />)
+    fireEvent.click(screen.getByRole('button', { name: /see more/i }))
+    expect(onOpen).toHaveBeenCalled()
   })
 })
 
-// ProductGrid
-describe('ProductGrid', () => {
-  it('показывает скелетоны при isLoading', () => {
-    render(<ProductGrid products={[]} isLoading={true} />)
-    expect(screen.getAllByTestId('product-skeleton').length).toBeGreaterThan(0)
-  })
-
-  it('рендерит продукты после загрузки', () => {
-    render(<ProductGrid products={[mockProduct]} isLoading={false} />)
-    expect(screen.getByText(/Tomato/i)).toBeInTheDocument()
-  })
-})
-
-// Catalog
-describe('Catalog', () => {
-  it('рендерит заголовок Catalog', () => {
-    render(<Catalog />)
-    expect(screen.getByText(/Catalog/i)).toBeInTheDocument()
-  })
-})
-
-// Header
-describe('Header', () => {
-  it('рендерит название магазина и кнопку Cart', () => {
-    render(<Header />)
-    expect(screen.getByText(/Vegetable/i)).toBeInTheDocument()
-    expect(screen.getByText(/Cart/i)).toBeInTheDocument()
-  })
-
-  it('показывает бейдж с количеством товаров в корзине', () => {
+// ---------- Modal ----------
+describe('Modal', () => {
+  test('рендерит children', () => {
+    const onClose = vi.fn()
     render(
-      <>
-        <Header />
-        <ProductCard product={mockProduct} />
-      </>,
+      <Modal onClose={onClose}>
+        <p>Modal content</p>
+      </Modal>,
     )
-    const addBtn = screen.getByText(/Add to cart/i)
-    fireEvent.click(addBtn)
-    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('Modal content')).toBeInTheDocument()
+  })
+
+  test('закрывается по клику на overlay', () => {
+    const onClose = vi.fn()
+    render(<Modal onClose={onClose}>Hello</Modal>)
+    fireEvent.click(screen.getByTestId('modal-overlay'))
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  test('закрывается по кнопке ✕', () => {
+    const onClose = vi.fn()
+    render(<Modal onClose={onClose}>Hello</Modal>)
+    fireEvent.click(screen.getByLabelText(/close modal/i))
+    expect(onClose).toHaveBeenCalled()
   })
 })
 
-// CartDropdown
-describe('CartDropdown', () => {
-  it('показывает товары в корзине', () => {
-    render(
-      <>
-        <ProductCard product={mockProduct} />
-        <CartDropdown />
-      </>,
-    )
-    const addBtn = screen.getByText(/Add to cart/i)
-    fireEvent.click(addBtn)
-    const tomatoes = screen.getAllByText('Tomato')
-    expect(tomatoes[1]).toBeInTheDocument()
-  })
-})
-
-// ---------------- App ----------------
-describe('App', () => {
-  it('рендерит Header и Catalog', () => {
-    render(<App />)
-    expect(screen.getByText(/Vegetable/i)).toBeInTheDocument()
-    expect(screen.getByText(/Catalog/i)).toBeInTheDocument()
+// ---------- LaunchesGrid ----------
+describe('LaunchesGrid', () => {
+  test('рендерит список запусков и открывает модалку', async () => {
+    render(<LaunchesGrid />)
+    expect(await screen.findByText('Demo Mission')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /see more/i }))
+    await waitFor(() => expect(screen.getByText(/Some mission details/i)).toBeInTheDocument())
   })
 })

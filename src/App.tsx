@@ -1,14 +1,13 @@
-import { Header } from './modules/Header'
-import { CartProvider } from './hooks/useCart'
-import { Catalog } from './modules/Catalog'
+import { Title } from '@mantine/core'
+import { LaunchesGrid } from './modules/LaunchesGrid'
 
 function App() {
   return (
     <>
-      <CartProvider>
-        <Header />
-        <Catalog />
-      </CartProvider>
+      <Title order={2} mb="lg" style={{ textAlign: 'center' }}>
+        SpaceX Launches 2020
+      </Title>
+      <LaunchesGrid />
     </>
   )
 }
