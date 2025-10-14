@@ -1,4 +1,6 @@
 import { Group, Text, Container, Anchor } from '@mantine/core'
+import hhIcon from '../assets/hh.svg'
+import userIcon from '../assets/user-circle.svg'
 
 export const Header = () => {
   return (
@@ -17,7 +19,7 @@ export const Header = () => {
           position: 'relative',
         }}>
         <Group gap="xs">
-          <img src="src/assets/hh.svg" alt="logo" width={28} height={28} />
+          <img src={hhIcon} alt="logo" width={28} height={28} />
           <Text fw={700} size="lg" style={{ color: 'black', cursor: 'pointer' }}>
             .FrontEnd
           </Text>
@@ -33,7 +35,7 @@ export const Header = () => {
             Вакансии FE
           </Anchor>
           <Anchor c="gray" fw={500} underline="never" style={{ cursor: 'pointer', display: 'flex' }}>
-            <img src="src/assets/user-circle.svg" alt="logo" width={24} height={24} />
+            <img src={userIcon} alt="logo" width={24} height={24} />
             Обо мне
           </Anchor>
         </Group>
