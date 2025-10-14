@@ -1,13 +1,15 @@
-import { Title } from '@mantine/core'
-import { LaunchesGrid } from './modules/LaunchesGrid'
+import { Header } from './modules/Header'
+import { VacanciesHeader } from './modules/VacanciesHeader'
+import { VacanciesGrid } from './modules/VacanciesGrid'
 
 function App() {
   return (
     <>
-      <Title order={2} mb="lg" style={{ textAlign: 'center' }}>
-        SpaceX Launches 2020
-      </Title>
-      <LaunchesGrid />
+      <Header />
+      <div style={{ backgroundColor: '#e9ecef' }}>
+        <VacanciesHeader />
+        <VacanciesGrid/>
+      </div>
     </>
   )
 }
