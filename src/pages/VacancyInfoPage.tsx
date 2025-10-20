@@ -69,11 +69,11 @@ export const VacancyInfoPage = () => {
           fw={500}
           style={{
             maxWidth: '250px',
-            color: 'white', // цвет текста
-            backgroundColor: 'black', // фон
-            borderRadius: '8px', // скругление
-            padding: '8px 16px', // внутренние отступы
-            textDecoration: 'none', // убрать подчеркивание
+            color: 'white', 
+            backgroundColor: 'black', 
+            borderRadius: '8px', 
+            padding: '8px 16px', 
+            textDecoration: 'none', 
           }}>
           Перейти к вакансии на hh.ru
         </Anchor>
