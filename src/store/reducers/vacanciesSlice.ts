@@ -9,6 +9,7 @@ export interface VacanciesState {
   loading: boolean
   error: string | null
   area: string
+  selectedVacancy: Vacancy | null
 }
 
 const initialState: VacanciesState = {
@@ -18,7 +19,20 @@ const initialState: VacanciesState = {
   area: '',
   loading: false,
   error: null,
+  selectedVacancy: null,
 }
+
+export const getVacancyById = createAsyncThunk<Vacancy, string, { rejectValue: string }>(
+  'vacancies/getById',
+  async (id, thunkAPI) => {
+    try {
+      const data = await ky.get(`https://api.hh.ru/vacancies/${id}`).json<Vacancy>()
+      return data
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err instanceof Error ? err.message : 'Не удалось загрузить вакансию')
+    }
+  },
+)
 
 export const getVacancies = createAsyncThunk<Vacancy[], string | void, { state: any; rejectValue: string }>(
   'vacancies/getAll',
@@ -42,7 +56,7 @@ export const getVacancies = createAsyncThunk<Vacancy[], string | void, { state: 
       }
 
       if (area) {
-        params.area = area 
+        params.area = area
       }
 
       const data = await ky.get('https://api.hh.ru/vacancies', { searchParams: params }).json<{ items: Vacancy[] }>()
@@ -85,6 +99,19 @@ export const vacanciesSlice = createSlice({
         state.loading = false
       })
       .addCase(getVacancies.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      .addCase(getVacancyById.pending, state => {
+        state.loading = true
+        state.error = null
+        state.selectedVacancy = null
+      })
+      .addCase(getVacancyById.fulfilled, (state, action: PayloadAction<Vacancy>) => {
+        state.selectedVacancy = action.payload
+        state.loading = false
+      })
+      .addCase(getVacancyById.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload as string
       })

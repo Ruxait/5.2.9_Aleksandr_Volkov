@@ -1,15 +1,16 @@
+import { Routes, Route } from 'react-router-dom'
+import { VacanciesPage } from './pages/VacanciesPage'
+import { VacancyInfoPage } from './pages/VacancyInfoPage'
 import { Header } from './modules/Header'
-import { VacanciesHeader } from './modules/VacanciesHeader'
-import { VacanciesGrid } from './modules/VacanciesGrid'
 
 function App() {
   return (
     <>
       <Header />
-      <div style={{ backgroundColor: '#e9ecef' }}>
-        <VacanciesHeader />
-        <VacanciesGrid/>
-      </div>
+      <Routes>
+        <Route path="/" element={<VacanciesPage />} />
+        <Route path="/vacancy/:id" element={<VacancyInfoPage />} />
+      </Routes>
     </>
   )
 }
