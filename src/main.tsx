@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider>
       <Provider store={store}>
-        <BrowserRouter basename="/4.2.3_Aleksandr_Volkov">
+        <BrowserRouter basename="/5.2.5_Aleksandr_Volkov">
           <App />
         </BrowserRouter>
       </Provider>
