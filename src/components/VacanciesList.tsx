@@ -1,19 +1,14 @@
 import { Container, Group, Pagination, Text } from '@mantine/core'
-import { useEffect, useState } from 'react'
-import { useTypedDispatch, useTypedSelector } from '../hooks/redux'
-import { getVacancies } from '../store/reducers/vacanciesSlice'
+import { useState } from 'react'
 import { VacancyCardSkeleton } from './VacancyCardSkeleton'
 import { VacancyCard } from './VacancyCard'
+import { vacanciesApi } from '../api/vacanciesApi'
+import { useTypedSelector } from '../hooks/redux'
 
 export const VacanciesList = () => {
-  const { items, loading } = useTypedSelector(state => state.vacanciesReducer)
+  const { search, skills, area } = useTypedSelector(state => state.vacanciesReducer)
+  const { data: items = [], isLoading } = vacanciesApi.useGetVacanciesQuery({search, skills, area})
   const [activePage, setActivePage] = useState(1)
-  const dispatch = useTypedDispatch()
-
-  useEffect(() => {
-    dispatch(getVacancies())
-    console.log('Всего элементов:', items.length)
-  }, [dispatch])
 
   const itemsPerPage = 10
   const startIndex = (activePage - 1) * itemsPerPage
@@ -22,7 +17,7 @@ export const VacanciesList = () => {
 
   return (
     <Container size="lg" style={{ flex: 1 }}>
-      {loading
+      {isLoading
         ? Array.from({ length: 10 }).map((_, idx) => <VacancyCardSkeleton key={idx} />)
         : (items.length > 0 ? paginatedItems.map(vacancy => <VacancyCard key={vacancy.id} vacancy={vacancy} />) : (
           <Text size="xl">Вакансии не найдены</Text>

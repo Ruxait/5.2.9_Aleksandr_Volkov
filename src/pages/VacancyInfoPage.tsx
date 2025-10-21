@@ -1,22 +1,13 @@
 import { useParams } from 'react-router-dom'
-import { useTypedDispatch, useTypedSelector } from '../hooks/redux'
 import { Card, Text, Anchor, Badge, Group } from '@mantine/core'
-import { useEffect } from 'react'
-import { getVacancyById } from '../store/reducers/vacanciesSlice'
 import { VacancyCardSkeleton } from '../components/VacancyCardSkeleton'
+import { vacanciesApi } from '../api/vacanciesApi'
 
 export const VacancyInfoPage = () => {
   const { id } = useParams<{ id: string }>()
-  const dispatch = useTypedDispatch()
-  const { selectedVacancy, loading } = useTypedSelector(state => state.vacanciesReducer)
+  const { data: selectedVacancy, isLoading } = vacanciesApi.useGetVacancyByIdQuery(id!)
 
-  useEffect(() => {
-    if (id) {
-      dispatch(getVacancyById(id))
-    }
-  }, [id, dispatch])
-
-  if (loading) return <VacancyCardSkeleton />
+  if (isLoading) return <VacancyCardSkeleton />
 
   if (!selectedVacancy) return <Text>Вакансия не найдена</Text>
 
@@ -68,12 +59,12 @@ export const VacancyInfoPage = () => {
           mt="md"
           fw={500}
           style={{
-            maxWidth: '250px',
+            width: 'fit-content',
             color: 'white', 
-            backgroundColor: 'black', 
             borderRadius: '8px', 
             padding: '8px 16px', 
             textDecoration: 'none', 
+            backgroundColor: 'black', 
           }}>
           Перейти к вакансии на hh.ru
         </Anchor>

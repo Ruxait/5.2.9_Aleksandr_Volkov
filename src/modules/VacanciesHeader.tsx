@@ -1,22 +1,20 @@
 import { Container, Text, Group, TextInput, Button, Flex } from '@mantine/core'
 import { useTypedDispatch, useTypedSelector } from '../hooks/redux'
-import { getVacancies, vacanciesSlice } from '../store/reducers/vacanciesSlice'
+import { vacanciesSlice } from '../store/reducers/vacanciesSlice'
+import { useState } from 'react'
 
 export const VacanciesHeader = () => {
   const dispatch = useTypedDispatch()
   const { search } = useTypedSelector(state => state.vacanciesReducer)
   const { setSearch } = vacanciesSlice.actions
+  const [localSearch, setLocalSearch] = useState(search)
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearch(e.target.value))
+    setLocalSearch(e.target.value)
   }
 
   const handleSearchSubmit = () => {
-    if (search.trim()) {
-      dispatch(getVacancies(search))
-    } else {
-      dispatch(getVacancies())
-    }
+    dispatch(setSearch(localSearch))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -45,7 +43,7 @@ export const VacanciesHeader = () => {
             <TextInput
               placeholder="🔍︎ Должность или название компании"
               onKeyDown={handleKeyDown}
-              value={search}
+              value={localSearch}
               onChange={handleSearchChange}
               style={{ minWidth: '400px' }}
               radius="md"

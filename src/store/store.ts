@@ -1,14 +1,17 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import vacanciesReducer from './reducers/vacanciesSlice'
+import { vacanciesApi } from '../api/vacanciesApi'
 
 const rootReducer = combineReducers({
   vacanciesReducer,
+  [vacanciesApi.reducerPath]: vacanciesApi.reducer,
 })
 
 export const setupStore = () => {
-    return configureStore({
-        reducer: rootReducer
-    })
+  return configureStore({
+    reducer: rootReducer,
+    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(vacanciesApi.middleware),
+  })
 }
 
 export const store = setupStore()

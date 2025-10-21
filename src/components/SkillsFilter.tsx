@@ -2,26 +2,28 @@ import { useState } from 'react'
 import { Card, Text, TextInput, Button, Pill, PillsInput, Flex, Select } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useTypedDispatch, useTypedSelector } from '../hooks/redux'
-import { getVacancies, vacanciesSlice } from '../store/reducers/vacanciesSlice'
+import { vacanciesSlice } from '../store/reducers/vacanciesSlice'
 import Vector from '../assets/Vector.svg?react'
+import { vacanciesApi } from '../api/vacanciesApi'
 
 export const SkillsFilter = () => {
   const dispatch = useTypedDispatch()
   const { skills, area } = useTypedSelector(state => state.vacanciesReducer)
   const { addSkill, removeSkill, setArea } = vacanciesSlice.actions
   const [inputValue, setInputValue] = useState('')
+  const [triggerGetVacancies] = vacanciesApi.useLazyGetVacanciesQuery()
 
   const handleAddSkill = () => {
     if (inputValue.trim()) {
       dispatch(addSkill(inputValue))
-      dispatch(getVacancies())
+      triggerGetVacancies({})
       setInputValue('')
     }
   }
 
   const handleRemoveSkill = (skill: string) => {
     dispatch(removeSkill(skill))
-    dispatch(getVacancies())
+    triggerGetVacancies({})
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,7 +34,7 @@ export const SkillsFilter = () => {
 
   const handleSelectChange = (value: string | null) => {
     dispatch(setArea(value || ''))
-    dispatch(getVacancies())
+    triggerGetVacancies({})
   }
 
   return (
