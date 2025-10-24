@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=./5.2.9_Aleksandr_Volkov/index.html" />
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+
+      const pathname = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+
+      const basename = "/5.2.9_Aleksandr_Volkov"; 
+
+      if (!pathname.startsWith(basename + "/index.html")) {
+        const redirectUrl =
+          basename +
+          "/index.html?redirect=" +
+          encodeURIComponent(pathname + search + hash);
+        window.location.replace(redirectUrl);
+      }
+    </script>
   </head>
   <body>
     <p>Redirecting...</p>
   </body>
 </html>
+
