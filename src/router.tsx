@@ -3,7 +3,7 @@ import { createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { VacanciesPage } from './pages/VacanciesPage'
 import { VacancyInfoPage } from './pages/VacancyInfoPage'
 import Layout from './pages/Layout'
-import {ErrorPage} from './pages/ErrorPage'
+import { ErrorPage } from './pages/ErrorPage'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,8 +17,8 @@ const router = createBrowserRouter(
     </Route>,
   ),
   {
-    basename: '/5.2.5_Aleksandr_Volkov', 
-  }
+    basename: '/5.2.9_Aleksandr_Volkov',
+  },
 )
 
 export default router
