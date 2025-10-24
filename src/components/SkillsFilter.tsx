@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import { Card, Text, TextInput, Button, Pill, PillsInput, Flex, Select } from '@mantine/core'
+import { Card, Text, TextInput, Button, Pill, PillsInput, Flex } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useTypedDispatch, useTypedSelector } from '../hooks/redux'
 import { vacanciesSlice } from '../store/reducers/vacanciesSlice'
-import Vector from '../assets/Vector.svg?react'
 import { vacanciesApi } from '../api/vacanciesApi'
 
 export const SkillsFilter = () => {
   const dispatch = useTypedDispatch()
-  const { skills, area } = useTypedSelector(state => state.vacanciesReducer)
-  const { addSkill, removeSkill, setArea } = vacanciesSlice.actions
+  const { skills } = useTypedSelector(state => state.vacanciesReducer)
+  const { addSkill, removeSkill } = vacanciesSlice.actions
   const [inputValue, setInputValue] = useState('')
   const [triggerGetVacancies] = vacanciesApi.useLazyGetVacanciesQuery()
 
@@ -30,11 +29,6 @@ export const SkillsFilter = () => {
     if (e.key === 'Enter') {
       handleAddSkill()
     }
-  }
-
-  const handleSelectChange = (value: string | null) => {
-    dispatch(setArea(value || ''))
-    triggerGetVacancies({})
   }
 
   return (
@@ -75,23 +69,6 @@ export const SkillsFilter = () => {
           </Pill>
         ))}
       </PillsInput>
-      <Select
-        leftSection={<Vector />}
-        mt="10px"
-        placeholder="Выберите город"
-        value={area}
-        onChange={handleSelectChange}
-        data={[
-          { value: '', label: 'Все' },
-          { value: '1', label: 'Москва' },
-          { value: '2', label: 'Санкт-Петербург' },
-        ]}
-        radius="md"
-        size="sm"
-        styles={{
-          label: { fontWeight: 600, marginBottom: 4 },
-        }}
-      />
     </Card>
   )
 }
