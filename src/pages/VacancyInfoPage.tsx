@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, Navigate } from 'react-router-dom'
 import { Card, Text, Anchor, Badge, Group } from '@mantine/core'
 import { VacancyCardSkeleton } from '../components/VacancyCardSkeleton'
 import { vacanciesApi } from '../api/vacanciesApi'
@@ -9,7 +9,9 @@ export const VacancyInfoPage = () => {
 
   if (isLoading) return <VacancyCardSkeleton />
 
-  if (!selectedVacancy) return <Text>Вакансия не найдена</Text>
+  if (!selectedVacancy) {
+    return <Navigate to="*" />
+  }
 
   const salaryText = selectedVacancy.salary
     ? `${selectedVacancy.salary.from?.toLocaleString() || ''} – ${selectedVacancy.salary.to?.toLocaleString() || ''} ₽`
@@ -60,11 +62,11 @@ export const VacancyInfoPage = () => {
           fw={500}
           style={{
             width: 'fit-content',
-            color: 'white', 
-            borderRadius: '8px', 
-            padding: '8px 16px', 
-            textDecoration: 'none', 
-            backgroundColor: 'black', 
+            color: 'white',
+            borderRadius: '8px',
+            padding: '8px 16px',
+            textDecoration: 'none',
+            backgroundColor: 'black',
           }}>
           Перейти к вакансии на hh.ru
         </Anchor>
